@@ -70,9 +70,7 @@ else:
     for E in Eset:
         print('-----processing {}'.format(E), file=sys.stderr)
         with open(dir + E + '.n3', "r") as f:
-            gg = rdflib.Graph()
-            result = gg.parse(f, format=fo, publicID=SCHEMABASE + E)
-            g = g + gg
+            result = g.parse(f, format=fo, publicID=SCHEMABASE + E)
  
 # set up a micro service using flash
 app = Flask(__name__, static_url_path='')
