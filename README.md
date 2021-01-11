@@ -2,6 +2,8 @@ This adapts `nareike/adhs` to the Toolforge environment and adds conversion of S
 `shexSpec/grammar-python-antlr`. As to the served data, the original ShExC code of each EntitySchema
 is embedded into the converted RDF, and so its text can be queried for.
 
+This repo: https://github.com/rwst/adhs-wde
+
 # Original adhs documentation
 Ad-hoc light weight SPARQL endpoint from a file, using Python Flask and RDFLib
 
