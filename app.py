@@ -1,7 +1,7 @@
 # modified from https://github.com/nareike/adhs
 #!/usr/bin/env python
 from flask import Flask, request, render_template, redirect
-from flask.ext.cors import CORS
+from flask_cors import CORS
 from flask_negotiate import consumes, produces
 from adhs_response import *
 import rdflib
