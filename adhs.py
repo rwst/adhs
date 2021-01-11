@@ -1,14 +1,18 @@
+# modified from https://github.com/nareike/adhs
 #!/usr/bin/env python
 from flask import Flask, request, render_template, redirect
 from flask.ext.cors import CORS
 from flask_negotiate import consumes, produces
 from adhs_response import *
 import rdflib
-import argparse
+import argparse, re, sys
+
+SCHEMABASE = 'https://www.wikidata.org/wiki/EntitySchema:'
 
 # command line parameters
 parser = argparse.ArgumentParser()
-parser.add_argument('file')
+parser.add_argument('--dir', type=str)
+parser.add_argument('--file', type=str)
 parser.add_argument('--host', default='127.0.0.1', type=str)
 parser.add_argument('-p', '--port', default=5000, type=int)
 parser.add_argument('-i', '--input', default='guess', choices=[
@@ -36,14 +40,40 @@ _FORMATS = ['*/*', 'text/html', 'application/sparql-results+json', 'application/
 g = rdflib.Graph()
 
 # parse file into graph
-with open(args.file, 'r') as fi:
-    if args.input == 'guess':
-        fo = rdflib.util.guess_format(args.file)
+if args.file is not None:
+    with open(args.file, 'r') as fi:
+        if args.input == 'guess':
+            fo = rdflib.util.guess_format(args.file)
+        else:
+            fo = args.input
+
+        g.parse(fi, format=fo)
+else:
+    if args.dir is None:
+        print('missing --file or --dir argument', file=sys.stderr)
+        exit()
     else:
-        fo = args.input
+        dir = args.dir
+    Ereg = re.compile(r"E\d+$")
 
-    g.parse(fi, format=fo)
+    with open(dir + 'shexset', 'r') as setfile:
+        Eset = set()
+        lines = setfile.readlines()
+        for l in lines:
+            m = re.fullmatch(Ereg, l.rstrip())
+            if m:
+                Eset.add(m.group(0))
+            else:
+                print("{} does not match: {}".format(l, m))
 
+    fo = args.input
+    for E in Eset:
+        print('-----processing {}'.format(E), file=sys.stderr)
+        with open(dir + E + '.n3', "r") as f:
+            gg = rdflib.Graph()
+            result = gg.parse(f, format=fo, publicID=SCHEMABASE + E)
+            g = g + gg
+ 
 # set up a micro service using flash
 app = Flask(__name__, static_url_path='')
 app.debug = True

@@ -7,8 +7,9 @@
 <body>
     <h1>Ad-hoc SPARQL endpoint for {{src}}</h1>
     <form action="{{host}}/sparql" method="get">
-        <textarea name="query" rows="12" cols="100">SELECT DISTINCT ?concept WHERE {
-    [] a ?concept .
+        <textarea name="query" rows="12" cols="100">SELECT DISTINCT ?schema ?shexc WHERE {
+    ?schema a <http://www.w3.org/ns/shex#Schema> .
+    ?schema rdfs:comment ?shexc.
 }</textarea>
         <br />
         <label>Result format:</label>
